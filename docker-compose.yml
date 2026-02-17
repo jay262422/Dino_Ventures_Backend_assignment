@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wallet_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/wallet_db
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo 'Waiting for database...';
+        until PGPASSWORD=postgres psql -h db -U postgres -d wallet_db -c '\q' 2>/dev/null; do
+          sleep 2;
+        done;
+        echo 'Running migration...';
+        PGPASSWORD=postgres psql -h db -U postgres -d wallet_db -f /app/migrations/001_init_schema.sql;
+        echo 'Running seed...';
+        PGPASSWORD=postgres psql -h db -U postgres -d wallet_db -f /app/seed.sql;
+        echo 'Starting app...';
+        node dist/index.js
+      "
+
+volumes:
+  pgdata:

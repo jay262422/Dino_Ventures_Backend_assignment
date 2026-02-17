@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet Demo - Dino Ventures</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface-hover: #243044;
+      --border: #2d3a4d;
+      --text: #e6edf3;
+      --text-muted: #8b9eb5;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #22c55e;
+      --error: #ef4444;
+      --gold: #f59e0b;
+      --diamond: #06b6d4;
+      --points: #a78bfa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .user-select {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .user-select button {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .user-select button:hover, .user-select button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .balance-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .balance-item {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .balance-item.gold { border-left: 3px solid var(--gold); }
+    .balance-item.diamond { border-left: 3px solid var(--diamond); }
+    .balance-item.points { border-left: 3px solid var(--points); }
+    .balance-item .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+    .balance-item .value { font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem; }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .form-row label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .form-row input, .form-row select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .form-row input:focus, .form-row select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-group { flex: 1; min-width: 140px; }
+    button[type="submit"] {
+      padding: 0.6rem 1.25rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    button[type="submit"]:hover {
+      background: var(--accent-hover);
+    }
+    button[type="submit"]:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .message {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      display: none;
+    }
+    .message.show { display: block; }
+    .message.success { background: rgba(34, 197, 94, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .message.error { background: rgba(239, 68, 68, 0.2); color: var(--error); border: 1px solid var(--error); }
+    .loading { opacity: 0.7; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏦 Wallet Demo</h1>
+      <p class="subtitle">MVP prototype for Dino Ventures Internal Wallet Service</p>
+    </header>
+
+    <div class="card">
+      <h2>Select User</h2>
+      <div class="user-select">
+        <button type="button" class="active" data-user="user_001">user_001</button>
+        <button type="button" data-user="user_002">user_002</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Balance</h2>
+      <div class="balance-grid">
+        <div class="balance-item gold">
+          <div class="label">Gold Coins</div>
+          <div class="value" id="bal-gold">-</div>
+        </div>
+        <div class="balance-item diamond">
+          <div class="label">Diamonds</div>
+          <div class="value" id="bal-diamond">-</div>
+        </div>
+        <div class="balance-item points">
+          <div class="label">Loyalty Points</div>
+          <div class="value" id="bal-points">-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Top-up (Purchase)</h2>
+      <form id="form-topup">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Asset</label>
+            <select name="assetCode" required>
+              <option value="GOLD_COINS">Gold Coins</option>
+              <option value="DIAMONDS">Diamonds</option>
+              <option value="LOYALTY_POINTS">Loyalty Points</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" name="amount" min="1" placeholder="100" required>
+          </div>
+          <div class="form-group">
+            <label>Payment Ref (optional)</label>
+            <input type="text" name="paymentRef" placeholder="pay_abc123">
+          </div>
+        </div>
+        <button type="submit">Top-up</button>
+        <div class="message" id="msg-topup"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Bonus / Incentive</h2>
+      <form id="form-bonus">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Asset</label>
+            <select name="assetCode" required>
+              <option value="GOLD_COINS">Gold Coins</option>
+              <option value="DIAMONDS">Diamonds</option>
+              <option value="LOYALTY_POINTS">Loyalty Points</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" name="amount" min="1" placeholder="50" required>
+          </div>
+          <div class="form-group">
+            <label>Reason (optional)</label>
+            <input type="text" name="reason" placeholder="referral bonus">
+          </div>
+        </div>
+        <button type="submit">Add Bonus</button>
+        <div class="message" id="msg-bonus"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Spend</h2>
+      <form id="form-spend">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Asset</label>
+            <select name="assetCode" required>
+              <option value="GOLD_COINS">Gold Coins</option>
+              <option value="DIAMONDS">Diamonds</option>
+              <option value="LOYALTY_POINTS">Loyalty Points</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" name="amount" min="1" placeholder="30" required>
+          </div>
+          <div class="form-group">
+            <label>Description (optional)</label>
+            <input type="text" name="description" placeholder="In-game item">
+          </div>
+        </div>
+        <button type="submit">Spend</button>
+        <div class="message" id="msg-spend"></div>
+      </form>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
