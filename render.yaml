@@ -1,0 +1,29 @@
+# Render Blueprint - Deploy with "New > Blueprint" in Render Dashboard
+# Connect your GitHub repo and Render will provision DB + app
+
+databases:
+  - name: wallet-db
+    databaseName: wallet_db
+    plan: free
+
+services:
+  - type: web
+    name: wallet-service
+    runtime: node
+    plan: free
+
+    buildCommand: npm install && npm run build
+    preDeployCommand: node dist/db/migrate.js && node dist/db/seed.js
+    startCommand: npm start
+
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wallet-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+
+    healthCheckPath: /health

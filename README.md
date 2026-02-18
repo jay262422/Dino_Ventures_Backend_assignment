@@ -30,6 +30,12 @@ A minimal web UI is included to demonstrate the wallet flows without using curl 
 
 After starting the app, open **http://localhost:3000/** in your browser.
 
+## Deploy (Live URL)
+
+Deploy to **Render** for a live URL. See [DEPLOY.md](./DEPLOY.md) for step-by-step instructions.
+
+> **Live URL:** _Add your Render URL here after deployment (e.g. `https://wallet-service-xxxx.onrender.com`)_
+
 ## Manual Setup
 
 ### Prerequisites
@@ -55,7 +61,7 @@ cp .env.example .env
 
 ```bash
 npm run migrate
-psql $DATABASE_URL -f seed.sql
+npm run seed
 ```
 
 Or use the setup script:
@@ -133,6 +139,8 @@ curl -X POST http://localhost:3000/wallet/spend \
 ├── frontend/                        # Demo UI (index.html, app.js)
 ├── migrations/001_init_schema.sql   # DB schema
 ├── seed.sql                         # Initial data
+├── render.yaml                      # Render Blueprint (one-click deploy)
+├── DEPLOY.md                        # Deployment instructions
 ├── setup.sh                         # Migration + seed script
 ├── src/
 │   ├── config/
