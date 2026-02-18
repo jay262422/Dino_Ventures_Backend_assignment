@@ -13,8 +13,7 @@ services:
     plan: free
 
     buildCommand: npm install && npm run build
-    preDeployCommand: node dist/db/migrate.js && node dist/db/seed.js
-    startCommand: npm start
+    startCommand: npm run deploy:start
 
     envVars:
       - key: DATABASE_URL
