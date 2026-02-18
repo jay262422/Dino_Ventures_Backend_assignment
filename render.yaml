@@ -13,7 +13,7 @@ services:
     plan: free
 
     buildCommand: npm install && npm run build
-    startCommand: npm run deploy:start
+    startCommand: npm run start
 
     envVars:
       - key: DATABASE_URL
