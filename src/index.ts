@@ -6,7 +6,7 @@ import walletRoutes from './routes/walletRoutes';
 const app = express();
 app.use(express.json());
 
-app.get('/health', (_, res) => res.json({ status: 'ok' }));
+app.get('/health', (_req: express.Request, res: express.Response) => res.json({ status: 'ok' }));
 app.use('/wallet', walletRoutes);
 
 // Serve frontend demo

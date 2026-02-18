@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { PoolClient } from 'pg';
 import { pool } from '../db/pool';
 
@@ -91,7 +92,7 @@ export async function topUp(
   if (amount <= 0) throw new Error('Amount must be positive');
 
   const client = await pool.connect();
-  const transactionId = crypto.randomUUID();
+  const transactionId = randomUUID();
 
   try {
     await client.query('BEGIN');
@@ -137,7 +138,7 @@ export async function bonus(
   if (amount <= 0) throw new Error('Amount must be positive');
 
   const client = await pool.connect();
-  const transactionId = crypto.randomUUID();
+  const transactionId = randomUUID();
 
   try {
     await client.query('BEGIN');
@@ -183,7 +184,7 @@ export async function spend(
   if (amount <= 0) throw new Error('Amount must be positive');
 
   const client = await pool.connect();
-  const transactionId = crypto.randomUUID();
+  const transactionId = randomUUID();
 
   try {
     await client.query('BEGIN');
@@ -246,5 +247,5 @@ export async function getAllBalances(userId: string): Promise<{ assetCode: strin
      WHERE w.owner_id = $1 AND w.owner_type = 'user'`,
     [userId]
   );
-  return result.rows.map((r) => ({ assetCode: r.asset_code, balance: parseInt(r.balance, 10) }));
+  return result.rows.map((r: { asset_code: string; balance: string }) => ({ assetCode: r.asset_code, balance: parseInt(r.balance, 10) }));
 }
